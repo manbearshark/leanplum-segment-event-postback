@@ -1,0 +1,11 @@
+{
+  "name": "leanplum_postback_source",
+  "version": "1.0.0",
+  "description": "Segment source using the LeanPlum postback API",
+  "main": "handler.js",
+  "author": "Igor Krtolica",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.18.0"
+  }
+}

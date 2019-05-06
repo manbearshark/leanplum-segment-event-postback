@@ -1,0 +1,17 @@
+
+# serverless.yml
+
+service: leanplumsource
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  environment:
+    SEGMENT_URL: "https://api.segment.io/v1"
+    SOURCE_KEY: ""
+
+functions:
+  eventTransformer:
+    handler: handler.eventTransformer
+    events:
+      - http: POST eventTransformer
