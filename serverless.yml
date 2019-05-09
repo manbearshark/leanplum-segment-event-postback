@@ -11,7 +11,7 @@ provider:
     SOURCE_KEY: ""
 
 functions:
-  eventTransformer:
-    handler: handler.eventTransformer
+  messageEventTransformer:
+    handler: handler.lpEventTransformer
     events:
-      - http: POST eventTransformer
+      - http: POST lpEventTransformer
