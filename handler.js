@@ -28,6 +28,8 @@ module.exports.lpEventTransformer = async (event, context, callback) => {
     body: null
   };
 
+  console.log("Raw Event: ", event);
+  
   let eventParams = mapToSegment(event.queryStringParameters);
   if( eventParams == null) {
     response.statusCode = 500;
