@@ -29,7 +29,7 @@ module.exports.lpEventTransformer = async (event, context, callback) => {
   };
 
   console.log("Raw Event: ", event);
-  
+
   let eventParams = mapToSegment(event.queryStringParameters);
   if( eventParams == null) {
     response.statusCode = 500;
@@ -74,7 +74,7 @@ async function post(data, token, url) {
   }
 }
 
-function mapToSegment(eventParams) {
+module.exports.mapToSegment = (eventParams) => {
   try {
     eventParams.properties = {};
 
@@ -114,7 +114,7 @@ function mapToSegment(eventParams) {
     console.log("ERROR - Could not map event properties: ", e.message);
     return null;
   }
-}
+};
 
 async function track({event, properties, timestamp, userId, context}) {
   try {
