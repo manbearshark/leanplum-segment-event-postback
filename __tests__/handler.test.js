@@ -36,7 +36,7 @@ test('handles A/B test events', () => {
         userId: 'igor@segment.com',
         context: { device: { id: '00284B13-ADAA-4FA0-AB01-1005B1B0802C' } },
         properties: {
-            
+
         },
     };
 
