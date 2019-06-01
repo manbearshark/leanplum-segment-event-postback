@@ -5,9 +5,7 @@
   "main": "handler.js",
   "author": "Igor Krtolica",
   "license": "MIT",
-  "dependencies": {
-    "axios": "^0.18.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "jest": "^24.8.0"
   }
