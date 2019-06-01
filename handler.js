@@ -1,80 +1,14 @@
-'use strict';
+/*
 
-const axios = require('axios');
+  This source uses the new Segment source function template.
 
-const SEGMENT_URL = process.env.SEGMENT_URL;
-const SOURCE_KEY = process.env.SOURCE_KEY;
+*/
 
-module.exports.lpEventTransformer = async (event, context, callback) => {
-
-  // LP Request format:
-  //
-  // [URL path to this Lambda]?message_id={{Message ID}}
-  //   %26event={{Message event}}%26device_id={{Device ID}}
-  //   %26userId={{User ID}}%26timestamp={{Trigger time}}
-  //   %26channel={{Message channel}}%26template_name={{Template name}}
-  //   %26parameters={{Parameters}}%26abTestID={{AB test ID}}
-  //   %26variantID={{Variant ID}}
-  //
-  // The code below assumes that this is the format that will be used to
-  // set up postbacks.
-  //
-  // This is intended to act as an endpoint for both AB Test events and for
-  // message events, as Lean Plum wants to get two separate endpoints for each
-  // for some reason
-
-  let response = {
-    statusCode: 200,
-    body: null
-  };
-
-  console.log("Raw Event: ", event);
-
-  let eventParams = mapToSegment(event.queryStringParameters);
-  if( eventParams == null) {
-    response.statusCode = 500;
-    response.body = "Could not parse event parameters.";
-  } else {
-    console.log(eventParams);
-    try {
-      track(eventParams);
-    } catch (e) {
-      console.log("ERROR - could not send event: ", e.message);
-      response.statusCode = 500;
-      response.body = e.message;
-    }
-  }
-
-  callback(null, response);
+const isBlank = (str) => {
+    return (!str || /^\s*$/.test(str));
 };
 
-function isBlank(str) {
-    return (!str || /^\s*$/.test(str));
-}
-
-async function post(data, token, url) {
-  let stringJSON = JSON.stringify(data);
-  try {
-    const response = await axios({
-      method: "POST",
-      url: url,
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json"
-      },
-      auth: {
-        username: token,
-        password: ""
-      },
-      data: stringJSON
-    });
-    return response;
-  } catch (e) {
-    throw e;
-  }
-}
-
-module.exports.mapToSegment = (eventParams) => {
+const mapToSegment = (eventParams) => {
   try {
     eventParams.properties = {};
 
@@ -105,7 +39,8 @@ module.exports.mapToSegment = (eventParams) => {
       eventParams.properties = Object.assign(eventParams.properties, params);
     }
 
-    return { timestamp: eventParams.timestamp,
+    return { type: "track",
+             timestamp: eventParams.timestamp,
              event: eventParams.event,
              userId: eventParams.userId,
              context: eventParams.context,
@@ -116,20 +51,19 @@ module.exports.mapToSegment = (eventParams) => {
   }
 };
 
-async function track({event, properties, timestamp, userId, context}) {
-  try {
-    await post({userId, properties, event, timestamp, context},
-      SOURCE_KEY, `${SEGMENT_URL}/track`);
-  } catch (e) {
-    throw e;
-  }
-}
+exports.processEvents = async (event) => {
+  let eventBody = event.payload.body;
+  let eventHeaders = event.payload.headers;
+  let queryParameters = event.payload.queryParameters;
 
-async function identify(userId, traits) {
-  try {
-    await post({userId, traits: { ...traits }},
-      SOURCE_KEY, `${SEGMENT_URL}/identify`);
-  } catch (e) {
-    throw e;
-  }
-}
+  console.log("Start Processing.");
+  let returnEvent = mapToSegment(queryParameters);
+
+  let returnValue = {
+    events: [{ ...returnEvent}]
+  };
+
+  console.log("End Processing:", returnValue);
+
+  return(returnValue)
+};
